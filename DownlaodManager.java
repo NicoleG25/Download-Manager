@@ -5,6 +5,7 @@ public class DownlaodManager {
         READ_FROM_FILE,
         DIRECT_LINK
     }
+    // new comment
 
     static int paralel_count = 0;
     static String links_file = "";
