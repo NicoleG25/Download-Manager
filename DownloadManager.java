@@ -1,9 +1,9 @@
-public class DownlaodManager {
+public class DownloadManager {
 
     // different subroutines distinction
     enum routine{
-        READ_FROM_FILE,
-        DIRECT_LINK
+            READ_FROM_FILE,
+            DIRECT_LINK
     }
     // new comment 2
 
@@ -17,9 +17,8 @@ public class DownlaodManager {
             case DIRECT_LINK:
                 //
             case READ_FROM_FILE:
-                //
+                    //
         }
-
     }
 
     public static routine check_args(String[] args){
@@ -35,8 +34,7 @@ public class DownlaodManager {
                 return routine.READ_FROM_FILE;
         }
         return null;
-        //print error/throw exception for invalid arguments number
+            //print error/throw exception for invalid arguments number
     }
-
 
 }
