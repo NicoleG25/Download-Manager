@@ -7,7 +7,7 @@ public class DownlaodManager {
     }
     // new comment 2
 
-    static int paralel_count = 0;
+    static int parallel_count = 0;
     static String links_file = "";
     static String link = "";  //
 
@@ -29,7 +29,7 @@ public class DownlaodManager {
                 // add some link validation here
             case 2:
                 links_file = args[0];
-                paralel_count = Integer.parseInt(args[1]);
+                parallel_count = Integer.parseInt(args[1]);
                 // add exception for int here
                 return routine.READ_FROM_FILE;
         }
