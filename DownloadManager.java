@@ -40,14 +40,15 @@ public class DownloadManager {
             //print error/throw exception for invalid arguments number
     }
 
-    public String TxtParser(String link) {
-        Pattern pattern = Pattern.compile("[^/\\\\&\\?]+\\.\\w{3,4}(?=([\\?&].*$|$))");
-        Matcher m = pattern.matcher(link);
-        //figure out how to take the matched pattern and put it in a variable
-        //String fileName = m.find();
-
-
-        return null;
-    }
+//    public String TxtParser(String link) {
+//        Pattern pattern = Pattern.compile("[^/\\\\&\\?]+\\.\\w{3,4}(?=([\\?&].*$|$))");
+//        Matcher m = pattern.matcher(link);
+//        //figure out how to take the matched pattern and put it in a variable
+//        String fileName = m.toString();
+//
+//
+//
+//        return null;
+//    }
 
 }
