@@ -6,6 +6,9 @@ public class SlaveThreader { //Blocking Queue
     protected String[] links;
     protected int num_connections;
     protected int fileSize;
+    protected int percent;
+    protected boolean startedDownload = false;
+
 
     public SlaveThreader(String[] links, int num_connections) throws MalformedURLException {
         this.links = links;
@@ -13,6 +16,7 @@ public class SlaveThreader { //Blocking Queue
         String strUrl = links[0];
         URL url = new URL(strUrl);
         this.fileSize = getFileSize(url);
+        this.percent = 0;
 
 
     }
@@ -21,8 +25,9 @@ public class SlaveThreader { //Blocking Queue
         // creates threads according to the connections number
         int rangeSplit = this.fileSize / num_connections;
         int start = 0;
+        double bufferSize = fileSize / 100;
         for (int i = 0; i <= num_connections; i++) {
-            Thread thread = new Thread(this.links[i], start, rangeSplit);
+            Thread thread = new Thread(this.links[i % this.links.length], start, rangeSplit,bufferSize);
             start = rangeSplit + 1;
             rangeSplit += rangeSplit; //might miss bits? or maybe have extra?
 
@@ -31,17 +36,19 @@ public class SlaveThreader { //Blocking Queue
 
     }
 
-    public void connect(String[] links) throws IOException {
-        int port = 80; //assuming port number
-//        while (true) {
-//            Socket socket = new Socket()
-//
-//        }
+
+ //TODO: create a method that manages minimal threshold for connections + max connections
 
 
-
-
+    // TODO: test + maybe finish implementing..? perhaps move to FileWriter
+    public synchronized void percentageCounter() {
+        if (this.startedDownload = false) { // takes care of the 0%
+            this.startedDownload = true;
+            System.out.println("Downloaded " + this.percent + "%");
+        }
+        System.out.println("Downloaded " + this.percent + "%");
     }
+
 
     //using a HEAD request to get the file size
     private static int getFileSize(URL url) throws MalformedURLException {
