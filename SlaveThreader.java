@@ -30,19 +30,18 @@ public class SlaveThreader { //Blocking Queue
         }
 
     }
-//    //need to connect to the server to get the size of the file
-//    public void connect(String[] links) throws IOException {
-//        int port = 80; //assuming port number
-//        ServerSocket serverSocket = new ServerSocket(port);
+
+    public void connect(String[] links) throws IOException {
+        int port = 80; //assuming port number
 //        while (true) {
-//            Socket socket = serverSocket.accept();
+//            Socket socket = new Socket()
 //
 //        }
 
 
 
 
-    //}
+    }
 
     //using a HEAD request to get the file size
     private static int getFileSize(URL url) throws MalformedURLException {
