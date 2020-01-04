@@ -1,8 +1,7 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 public class FileWriter {
     public String link;
@@ -12,22 +11,31 @@ public class FileWriter {
     public FileWriter(String[] link, int num_connections) {
         //this.link = link;
         //this.num_connections = num_connections;
-        this.fileName = TxtParser(link[0]);
+        this.fileName = txtParser(link[0]);
 
 
     }
 
-    public String TxtParser(String link) {
-        Pattern pattern = Pattern.compile("[^/\\\\&\\?]+\\.\\w{3,4}(?=([\\?&].*$|$))");
-        Matcher m = pattern.matcher(link);
-        //figure out how to take the matched pattern and put it in a variable
-        String fileName = m.toString();
-        System.out.println(fileName); // so we can test
-        return fileName;
+    public String txtParser(String link) {
+        String fileName = "";
+        if (link.contains("\\")) { //if we are dealing with blackslashes
+           String newLink = link.replace('\\', '/');
+
+          fileName = newLink.substring(newLink.lastIndexOf('/')+1, newLink.length());
+        }
+        else { //if we are dealing with forward slashes
+            fileName = link.substring(link.lastIndexOf('/') + 1, link.length());
+        }
+        String fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+        return fileNameWithoutExtension;
     }
 
     //Creates a tmp file to use as metadata
-    File file = new File(fileName+".temp");
+    //File file = new File(fileName+".tmp");
+
+    public void writing() {
+
+    }
 
 
 
