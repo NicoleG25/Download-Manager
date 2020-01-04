@@ -18,6 +18,8 @@ public class Tester {
         String strUrl = "https://download.sketchapp.com/sketch-61.2-89653.zip?_ga=2.137558832.1675698364.1578132420-1989857718.1564751276";
         URL url = new URL(strUrl);
         System.out.println(getFileSize(url));
+        String byteRange = "bytes=" + 0 + "-" + 24;
+        System.out.println(byteRange);
 
 
     }

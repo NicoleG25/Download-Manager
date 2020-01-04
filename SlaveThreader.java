@@ -3,9 +3,9 @@ import java.net.*;
 import java.util.*;
 
 public class SlaveThreader { //Blocking Queue
-    String[] links;
-    int num_connections;
-    int fileSize;
+    protected String[] links;
+    protected int num_connections;
+    protected int fileSize;
 
     public SlaveThreader(String[] links, int num_connections) throws MalformedURLException {
         this.links = links;
@@ -16,28 +16,33 @@ public class SlaveThreader { //Blocking Queue
 
 
     }
-
+    // TODO: test
     public void runThreads(int num_connections) {
         // creates threads according to the connections number
+        int rangeSplit = this.fileSize / num_connections;
+        int start = 0;
         for (int i = 0; i <= num_connections; i++) {
+            Thread thread = new Thread(this.links[i], start, rangeSplit);
+            start = rangeSplit + 1;
+            rangeSplit += rangeSplit; //might miss bits? or maybe have extra?
 
 
         }
 
     }
-    //need to connect to the server to get the size of the file
-    public void connect(String[] links) throws IOException {
-        int port = 80; //assuming port number
-        ServerSocket serverSocket = new ServerSocket(port);
-        while (true) {
-            Socket socket = serverSocket.accept();
-
-        }
-
-
+//    //need to connect to the server to get the size of the file
+//    public void connect(String[] links) throws IOException {
+//        int port = 80; //assuming port number
+//        ServerSocket serverSocket = new ServerSocket(port);
+//        while (true) {
+//            Socket socket = serverSocket.accept();
+//
+//        }
 
 
-    }
+
+
+    //}
 
     //using a HEAD request to get the file size
     private static int getFileSize(URL url) throws MalformedURLException {
