@@ -15,17 +15,30 @@ public class Tester {
 //        System.out.println(writer.fileName);
 
         //String strUrl = "http://centos.activecloud.co.il/6.10/isos/x86_64/CentOS-6.10-x86_64-netinstall.iso";
+/*
         String strUrl = "https://download.sketchapp.com/sketch-61.2-89653.zip?_ga=2.137558832.1675698364.1578132420-1989857718.1564751276";
         URL url = new URL(strUrl);
         System.out.println(getFileSize(url));
         String byteRange = "bytes=" + 0 + "-" + 24;
         System.out.println(byteRange);
 
+*/
+        String[] arr = IdcDm.listFromFile("/home/PointBlank/Documents/linksTest");
+        printArray(arr);
 
     }
 
+
+
+    public static void printArray(String[] arr){
+        System.out.println("printing -------");
+        for (int i=0; i<arr.length; i++){
+            System.out.println( arr[i]);
+        }
+    }
+
     //using a HEAD request to get the file size
-    private static int getFileSize(URL url) throws MalformedURLException {
+/*    private static int getFileSize(URL url) throws MalformedURLException {
 
         URLConnection conn = null;
         try {
@@ -44,5 +57,5 @@ public class Tester {
                 ((HttpURLConnection)conn).disconnect();
             }
         }
-    }
+    }*/
 }
