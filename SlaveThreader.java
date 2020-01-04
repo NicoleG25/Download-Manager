@@ -37,8 +37,10 @@ public class SlaveThreader { //Blocking Queue
     }
 
 
+ //TODO: create a method that manages minimal threshold for connections + max connections
 
-    // TODO: test + maybe finish implementing..?
+
+    // TODO: test + maybe finish implementing..? perhaps move to FileWriter
     public synchronized void percentageCounter() {
         if (this.startedDownload = false) { // takes care of the 0%
             this.startedDownload = true;

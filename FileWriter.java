@@ -33,6 +33,15 @@ public class FileWriter {
     //Creates a tmp file to use as metadata
     //File file = new File(fileName+".tmp");
 
+
+    //TODO: implement percentage prints HERE
+
+    //TODO: serialize data if metadata is implemented here
+
+    // USE RandomAccessFile when writing.
+
+    //TODO: figure out how to put pieces of the file together
+
     public void writing() {
 
     }

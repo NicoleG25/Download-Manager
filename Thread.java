@@ -15,7 +15,7 @@ public class Thread extends java.lang.Thread {
         this.start = start;
         this.link = link;
         this.ID = this.getId();
-        this.buffer = buffer;
+        this.buffer = buffer; // need to implement sending a flag back to SlaveThreader
 
     }
     // TODO: test + finish implementing errors
