@@ -53,7 +53,7 @@ public class FileWriter {
 
     //TODO: implement percentage prints HERE
 
-    //TODO: serialize data if metadata is implemented here
+
 
     // USE RandomAccessFile when writing.
 
@@ -61,7 +61,7 @@ public class FileWriter {
     // https://stackoverflow.com/questions/2243073/java-multiple-connection-downloading/2243731#2243731
     //or https://stackoverflow.com/questions/4532462/how-to-merge-binary-files-using-java
 
-    public synchronized void writing(long position, byte[] buffer, int length, int index) { //dont forget to close file //index needs to be computed and sent to by Thread
+    public synchronized void writing(long position, byte[] buffer, int length, int index) {  //index needs to be computed and sent to by Thread
         int percentTemp = 0;
         try {
             accessor.seek(position);

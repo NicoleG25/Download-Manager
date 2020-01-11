@@ -16,11 +16,19 @@ public class IdcDm {
     }
 
     public static void main(String[] args){
-        switch (checkArgs(args)){
+        MetaData metaData;
+        int connections=1;
+        switch (checkArgs(args)) {
+
             case DIRECT_LINK:
                 String[] links = {args[0]};
+                if (args.length == 2){
+                    connections = Integer.parseInt(args[1]);
+                }
+                metaData = new MetaData(connections,links); //pass arguments to metadata
                 try{
-                    SlaveThreader st = new SlaveThreader(links, PRL_DOWNLOADS);
+
+                    SlaveThreader st = new SlaveThreader(metaData);
                 }
                 catch(MalformedURLException e){
                     System.out.println("url exception");
@@ -28,13 +36,18 @@ public class IdcDm {
                 break;
             case READ_FROM_FILE:
                 links = listFromFile(args[0]);
+                if (args.length == 2){
+                    connections = Integer.parseInt(args[1]);
+                }
+                metaData = new MetaData(connections, links); //pass arguments to metadata
                 try{
-                    SlaveThreader st = new SlaveThreader(links, PRL_DOWNLOADS);
+                    SlaveThreader st = new SlaveThreader(metaData);
                 }
                 catch(MalformedURLException e){
                     System.out.println("url exception");
                 }
         }
+
     }
 
     /**

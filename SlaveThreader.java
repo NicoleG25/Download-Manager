@@ -3,16 +3,17 @@ import java.net.*;
 import java.util.*;
 
 public class SlaveThreader { //Blocking Queue
-    protected String[] links;
-    protected int num_connections;
+
     protected int fileSize;
     //protected File file;
     protected RandomAccessFile accessor;
+    protected String[] links;
+    protected int num_connections;
 
 
-    public SlaveThreader(String[] links, int num_connections, MetaData data) throws MalformedURLException {
-        this.links = links;
-        this.num_connections = num_connections;
+    public SlaveThreader(MetaData data) throws MalformedURLException {
+        this.links = data.links;
+        this.num_connections = data.num_connections;
         String strUrl = links[0];
         URL url = new URL(strUrl);
         this.fileSize = getFileSize(url);
