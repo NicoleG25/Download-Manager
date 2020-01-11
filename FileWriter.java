@@ -41,6 +41,8 @@ public class FileWriter {
     // USE RandomAccessFile when writing.
 
     //TODO: figure out how to put pieces of the file together
+    // https://stackoverflow.com/questions/2243073/java-multiple-connection-downloading/2243731#2243731
+    //or https://stackoverflow.com/questions/4532462/how-to-merge-binary-files-using-java
 
     public void writing() {
 
