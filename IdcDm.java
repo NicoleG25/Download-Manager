@@ -62,6 +62,9 @@ public class IdcDm {
         return routine.DIRECT_LINK;
     }
 
+
+    //TODO: create a method that manages minimal threshold for connections + max connections
+
     /**
      * reads a file, returns a string array where each line from the file is an entry
      * @param filePath - path to file

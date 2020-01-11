@@ -7,7 +7,7 @@ import java.net.URLConnection;
 public class Tester {
 
     public static void main(String[] args) throws MalformedURLException {
-//        String[] links = {"http://centos.activecloud.co.il/6.10/isos/x86_64/CentOS-6.10-x86_64-netinstall.iso"};
+        String[] links = {"http://centos.activecloud.co.il/6.10/isos/x86_64/CentOS-6.10-x86_64-netinstall.iso"};
 //        //check if CMD will run
 //        String[] links2 = {"http://centos.activecloud.co.il\\6.10\\isos\\x86_64\\CentOS-6.10-x86_64-netinstall.iso"};
 //        FileWriter writer = new FileWriter(links2, 0);
@@ -23,9 +23,15 @@ public class Tester {
         System.out.println(byteRange);
 
 */
-        String[] arr = IdcDm.listFromFile("/home/PointBlank/Documents/linksTest");
-        printArray(arr);
+//        String[] arr = IdcDm.listFromFile("/home/PointBlank/Documents/linksTest");
+//        printArray(arr);
 
+//        MetaData data = new MetaData(1, links);
+//        data.serialize();
+//        data.setFileSize();
+//        data = MetaData.deserialize();
+//        System.out.println(data.getFileSize());
+        MetaData.deleteFile("temp23f3sersdf.ser");
     }
 
 

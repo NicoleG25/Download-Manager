@@ -9,10 +9,12 @@ public class SlaveThreader { //Blocking Queue
     protected RandomAccessFile accessor;
     protected String[] links;
     protected int num_connections;
+    protected  MetaData data;
 
 
     public SlaveThreader(MetaData data) throws MalformedURLException {
         this.links = data.links;
+        this.data = data;
         this.num_connections = data.num_connections;
         String strUrl = links[0];
         URL url = new URL(strUrl);
@@ -66,14 +68,14 @@ public class SlaveThreader { //Blocking Queue
 
 
 
- //TODO: create a method that manages minimal threshold for connections + max connections
-
-
-
-
+    /**
+     * gets the file size from the URL using a HEAD request.
+     * @param url - passed arguments array.
+     * @return - returns the integer that represents the size of the file.
+     */
 
     //using a HEAD request to get the file size
-    private static int getFileSize(URL url) throws MalformedURLException {
+    public static int getFileSize(URL url) throws MalformedURLException {
         URLConnection conn = null;
         try {
             conn = url.openConnection();

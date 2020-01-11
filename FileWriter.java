@@ -36,9 +36,9 @@ public class FileWriter {
     public String txtParser(String link) {
         String fileName = "";
         if (link.contains("\\")) { //if we are dealing with blackslashes
-           String newLink = link.replace('\\', '/');
+            String newLink = link.replace('\\', '/');
 
-          fileName = newLink.substring(newLink.lastIndexOf('/')+1, newLink.length());
+            fileName = newLink.substring(newLink.lastIndexOf('/')+1, newLink.length());
         }
         else { //if we are dealing with forward slashes
             fileName = link.substring(link.lastIndexOf('/') + 1, link.length());
@@ -48,7 +48,6 @@ public class FileWriter {
         //return fileNameWithoutExtension;
         return fileName;
     }
-
 
 
     //TODO: implement percentage prints HERE
