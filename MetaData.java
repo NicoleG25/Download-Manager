@@ -9,12 +9,17 @@ public class MetaData  implements Serializable {
     public String fileName;
     protected String[] links;
     protected int num_connections;
+    private int finished;
+    private boolean[] flags;
+    public static final int CHUNKSIZE = 1024;
 
 
     public MetaData(int num_connections, String[] links) {
         this.num_connections = num_connections;
         this.links = links;
-
+        this.finished = 0; // TODO: UPDATE IN A FUNCTION SOMEWHERE
+        this.progress = new long[CHUNKSIZE];
+        this.flags = new boolean[CHUNKSIZE];
         this.fileName = txtParser(links[0]);
 
 
@@ -120,6 +125,12 @@ public class MetaData  implements Serializable {
         file.delete();
 
     }
+
+
+    public synchronized int getFinished() {
+        return this.finished;
+    }
+
 
 
 

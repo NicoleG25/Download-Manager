@@ -37,9 +37,10 @@ public class SlaveThreader { //Blocking Queue
         int start = 0;
         double bufferSize = fileSize / 100;
         Thread[] threads = new Thread[num_connections];
+        FileWriter fw = new FileWriter(this.data, this.accessor);
         for (int i = 0; i <= num_connections; i++) {
             //Thread thread = new Thread(this.links[i % this.links.length], start, rangeSplit,bufferSize);
-            threads[i] = new Thread(this.links[i % this.links.length], start, rangeSplit,bufferSize);
+            threads[i] = new Thread(this.links[i % this.links.length], start, rangeSplit,bufferSize, fw, this.data);
             start = rangeSplit + 1;
             rangeSplit += rangeSplit; //might miss bits? or maybe have extra?
 

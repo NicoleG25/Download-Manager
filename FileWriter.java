@@ -31,7 +31,6 @@ public class FileWriter {
      * @param link - path to file
      * @return - returns a string that is the filename
      */
-    //TODO : Test that we get the filename with correct extension
 
     public String txtParser(String link) {
         String fileName = "";
@@ -47,10 +46,11 @@ public class FileWriter {
         //String fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
         //return fileNameWithoutExtension;
         return fileName;
+
     }
 
 
-    //TODO: implement percentage prints HERE
+
 
 
 
@@ -68,7 +68,7 @@ public class FileWriter {
         } catch (IOException e) {
             System.err.println("Invalid Position");
         }
-        // TODO : test
+        // TODO : test percentages
         //calculates the percentages
         percentTemp = (int)(this.sum * 100 /data.getFileSize());
         this.sum += length;

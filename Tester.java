@@ -10,9 +10,10 @@ public class Tester {
         String[] links = {"http://centos.activecloud.co.il/6.10/isos/x86_64/CentOS-6.10-x86_64-netinstall.iso"};
 //        //check if CMD will run
 //        String[] links2 = {"http://centos.activecloud.co.il\\6.10\\isos\\x86_64\\CentOS-6.10-x86_64-netinstall.iso"};
-//        FileWriter writer = new FileWriter(links2, 0);
+//        //FileWriter writer = new FileWriter();
 //        System.out.println();
 //        System.out.println(writer.fileName);
+        String fileName = txtParser(links[0]);
 
         //String strUrl = "http://centos.activecloud.co.il/6.10/isos/x86_64/CentOS-6.10-x86_64-netinstall.iso";
 /*
@@ -31,7 +32,25 @@ public class Tester {
 //        data.setFileSize();
 //        data = MetaData.deserialize();
 //        System.out.println(data.getFileSize());
-        MetaData.deleteFile("temp23f3sersdf.ser");
+//        MetaData.deleteFile("temp23f3sersdf.ser");
+    }
+
+    public static String txtParser(String link) {
+        String fileName = "";
+        if (link.contains("\\")) { //if we are dealing with blackslashes
+            String newLink = link.replace('\\', '/');
+
+            fileName = newLink.substring(newLink.lastIndexOf('/')+1, newLink.length());
+        }
+        else { //if we are dealing with forward slashes
+            fileName = link.substring(link.lastIndexOf('/') + 1, link.length());
+        }
+
+        //String fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+        //return fileNameWithoutExtension;
+        System.out.println(fileName);
+        return fileName;
+
     }
 
 
