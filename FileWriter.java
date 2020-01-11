@@ -4,17 +4,34 @@ import java.util.*;
 
 
 public class FileWriter {
-    public String link;
-    public int num_connections;
-    public String fileName;
 
-    public FileWriter(String[] link, int num_connections) {
-        //this.link = link;
-        //this.num_connections = num_connections;
-        this.fileName = txtParser(link[0]);
+    public MetaData data;
+    public RandomAccessFile accessor;
+    public long sum;
+    public int percent;
+
+    public FileWriter(MetaData data, RandomAccessFile accessor) {
+        this.data = data;
+
+        this.sum = 0;
+        this.percent = 0;
+        System.out.println("Downloaded " + (this.percent) + "%");
+
+            this.accessor = accessor;
+        try {
+            this.accessor.setLength(data.getFileSize());
+        } catch (IOException e) {
+            System.err.println("Cant set file size");
+        }
 
 
     }
+    /**
+     * gets a link in order to parse it to the name of the file
+     * @param link - path to file
+     * @return - returns a string that is the filename
+     */
+    //TODO : Test that we get the filename with correct extension
 
     public String txtParser(String link) {
         String fileName = "";
@@ -26,12 +43,12 @@ public class FileWriter {
         else { //if we are dealing with forward slashes
             fileName = link.substring(link.lastIndexOf('/') + 1, link.length());
         }
-        String fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
-        return fileNameWithoutExtension;
+
+        //String fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+        //return fileNameWithoutExtension;
+        return fileName;
     }
 
-    //Creates a tmp file to use as metadata
-    //File file = new File(fileName+".tmp");
 
 
     //TODO: implement percentage prints HERE
@@ -44,11 +61,39 @@ public class FileWriter {
     // https://stackoverflow.com/questions/2243073/java-multiple-connection-downloading/2243731#2243731
     //or https://stackoverflow.com/questions/4532462/how-to-merge-binary-files-using-java
 
-    public void writing() {
+    public synchronized void writing(long position, byte[] buffer, int length, int index) { //dont forget to close file //index needs to be computed and sent to by Thread
+        int percentTemp = 0;
+        try {
+            accessor.seek(position);
+            accessor.write(buffer, 0, length);
+        } catch (IOException e) {
+            System.err.println("Invalid Position");
+        }
+        // TODO : test
+        //calculates the percentages
+        percentTemp = (int)(this.sum * 100 /data.getFileSize());
+        this.sum += length;
+        if (percentTemp > this.percent){
+            System.out.println("Downloaded " + (percentTemp) + "%");
+            this.percent = percentTemp;
+        }
+
+        data.updateProgress(index, length);
+
+
+
 
     }
 
-
+//        // TODO: test + maybe finish implementing..? perhaps move to FileWriter
+//        public synchronized void percentageCounter() {
+//            if (this.startedDownload = false) { // takes care of the 0%
+//                this.startedDownload = true;
+//                System.out.println("Downloaded " + this.percent + "%");
+//            }
+//            System.out.println("Downloaded " + this.percent + "%");
+//        }
+//
 
 
 
