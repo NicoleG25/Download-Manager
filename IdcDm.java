@@ -2,9 +2,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -37,11 +35,20 @@ public class IdcDm {
     /**
      * The function checks if the String is a path to a file, if not by default it is set as a URL
      * @param linkInput - arg[0], should be path to file or a URL
-     * @return - returns list of URL
+     * @return - returns a list of Strings representing URL
      */
     public static String[] getLinkArray(String linkInput){
-        //TODO: implement
-        return null;
+        //TODO: test
+
+        if (new File(linkInput).exists()) {
+            return listFromFile(linkInput);
+        }
+        else {
+            String[] list = {linkInput};
+            return list;
+
+        }
+
     }
 
     //TODO : Test
@@ -63,13 +70,31 @@ public class IdcDm {
     }
 
     /**
-     * returns file size in bytes
-     * @param link - URL link to file
-     * @return
+     * gets the file size from the URL using a HEAD request.
+     * @param link - String link to file
+     * @return - returns the integer that represents the size of the file.
      */
-    public static long getFileSize(String link){
-        // TODO: implement
-        return 0;
+
+    //using a HEAD request to get the file size
+    public static int getFileSize(String link) {
+        URLConnection conn = null;
+        try {
+            URL url = new URL(link);
+            conn = url.openConnection();
+            if(conn instanceof HttpURLConnection) {
+                ((HttpURLConnection)conn).setRequestMethod("HEAD");
+            }
+            conn.getInputStream();
+            return conn.getContentLength();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            if(conn instanceof HttpURLConnection) {
+                ((HttpURLConnection)conn).disconnect();
+            }
+        }
     }
 
     /**
@@ -80,6 +105,11 @@ public class IdcDm {
      */
     public static int getConcCount(long fileSize, String[] args){
         // TODO: implement
+
+        if (fileSize < 1024) {
+            return 2;
+
+        }
         return 0;
     }
 
@@ -90,12 +120,29 @@ public class IdcDm {
      * @return
      */
     public static MetaData genMetaData(String name){
-        //TODO: implement
+        //TODO: add fields to Metadata constructor call + test
+        File f = new File("tempMetaData_agng.ser");
+        if(f.exists()) {
+            MetaData temp = MetaData.deserialize();
+            String fileName = temp.getFileName();
+            if (fileName == name) {
+                return temp;
+
+            }
+            else {
+                MetaData metadata = new MetaData(); //insert arguments when finished constrcution Metadata class
+
+            }
+
+
+        }
+        else {
+            MetaData metadata = new MetaData(); //insert arguments when finished constrcution Metadata class
+        }
         return null;
     }
 
 
-    //TODO: create a method that manages minimal threshold for connections + max connections
     /**
      * reads a file, returns a string array where each line from the file is an entry
      * @param filePath - path to file

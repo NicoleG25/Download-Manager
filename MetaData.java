@@ -14,6 +14,7 @@ public class MetaData  implements Serializable {
     public static final int ARRAY_SIZE = 1024; // size of array
 
 
+
     public MetaData(int num_connections, String[] links) {
         this.num_connections = num_connections;
         this.links = links;
@@ -45,7 +46,7 @@ public class MetaData  implements Serializable {
     public void serialize() {
 
 
-        // Serialization
+        // Serialization TODO check that we get backup
         try {
             //Saving of object in a file
             FileOutputStream file = new FileOutputStream(serName);
@@ -54,10 +55,13 @@ public class MetaData  implements Serializable {
             // Method for serialization of object
             out.writeObject(this);
 
+
             out.close();
             file.close();
 
             System.out.println("Object has been serialized");
+            File filetTemp = new File(serName);
+            filetTemp.renameTo(new File(serName2));
 
         } catch (IOException ex) {
             System.out.println("IOException is caught in serialize");
@@ -97,14 +101,27 @@ public class MetaData  implements Serializable {
     }
 
     /**
-     * Deletes the file with the name @param fileName.
-     * @param fileName - path to file
+     * Deletes the two temp files
+     *
      */
-    public static void deleteFile(String fileName) {
-        File file = new File(fileName);
+    public static void deleteFile() {
+
+        File file = new File(serName);
+        File file2 = new File(serName2);
         file.delete();
+        file2.delete();
 
     }
+
+    public String getFileName() {
+        return this.fileName;
+    }
+
+    public void setFileName(String name) {
+        this.fileName = name;
+
+    }
+
 
 
     public synchronized int getFinished() {
