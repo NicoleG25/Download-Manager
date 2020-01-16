@@ -3,26 +3,23 @@ import java.net.*;
 import java.util.*;
 
 public class MetaData  implements Serializable {
-    private static String serName = "temp23f3sersdf.ser";
-    private long[] progress;
-    private long fileSize;
-    public String fileName;
-    protected String[] links;
-    protected int num_connections;
-    private int finished;
-    private boolean[] flags;
-    public static final int CHUNKSIZE = 1024;
+    private static String serName = "tempMetaData_agng.ser"; // name for main serialization file
+    private static String serName2 = "tempMetaDAta_ngag.ser"; // name for temp serialization file to avoid corruption
+    private long[] progress; // progress in each chunk of the download, stores count of bytes downloaded.
+    private long fileSize; // the full size of the download file in bytes
+    public String fileName; // name of the download file
+    protected String[] links; // TODO: move to main, no need to store in metadata
+    protected int num_connections; // TODO: move to main, no need to store in metadata
+    private int finished; // TODO: figure out wtf is this?
+    public static final int ARRAY_SIZE = 1024; // size of array
 
 
     public MetaData(int num_connections, String[] links) {
         this.num_connections = num_connections;
         this.links = links;
         this.finished = 0; // TODO: UPDATE IN A FUNCTION SOMEWHERE
-        this.progress = new long[CHUNKSIZE];
-        this.flags = new boolean[CHUNKSIZE];
+        this.progress = new long[ARRAY_SIZE];
         this.fileName = txtParser(links[0]);
-
-
     }
 
     public void updateProgress(int index, int bytes) {
@@ -31,28 +28,7 @@ public class MetaData  implements Serializable {
 
     }
 
-    /**
-     * gets a link in order to parse it to the name of the file
-     * @param link - path to file
-     * @return - returns a string that is the filename
-     */
-    //TODO : Test that we get the filename without .Extension
 
-    public String txtParser(String link) {
-        String fileName = "";
-        if (link.contains("\\")) { //if we are dealing with blackslashes
-            String newLink = link.replace('\\', '/');
-
-            fileName = newLink.substring(newLink.lastIndexOf('/')+1, newLink.length());
-        }
-        else { //if we are dealing with forward slashes
-            fileName = link.substring(link.lastIndexOf('/') + 1, link.length());
-        }
-
-        String fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
-        return fileNameWithoutExtension;
-        //return fileName;
-    }
 
 
     public long getFileSize() {
@@ -91,6 +67,10 @@ public class MetaData  implements Serializable {
 
     //TODO: test deserialization
 
+    /**
+     * deserialize an in instance of MetaData
+     * @return
+     */
     public static MetaData deserialize() {
         // Deserialization
         MetaData data = null;
@@ -115,11 +95,11 @@ public class MetaData  implements Serializable {
         }
         return data;
     }
+
     /**
      * Deletes the file with the name @param fileName.
      * @param fileName - path to file
      */
-
     public static void deleteFile(String fileName) {
         File file = new File(fileName);
         file.delete();

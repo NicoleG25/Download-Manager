@@ -37,7 +37,6 @@ public class Thread extends java.lang.Thread {
                 urlConnection.setRequestProperty("Range", byteRange); //should handle download range
                 urlConnection.setConnectTimeout(500);
 
-
                 try {
                     urlConnection.connect();
                     BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
@@ -53,13 +52,15 @@ public class Thread extends java.lang.Thread {
 
                 }
                 catch(SocketTimeoutException e){
-                    System.err.println("SocketTimeout Exception in connect method @ Thread");
+                    System.err.println("SocketTimeout Exception in connect method @ Thread: "+this.ID);
+                    System.exit(1);
 
                 }
 
             }
             catch (IOException e) {
-
+                System.err.println("http URL connection error, thread: "+this.ID);
+                System.exit(1);
             }
 
         }
