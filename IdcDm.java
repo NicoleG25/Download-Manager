@@ -22,6 +22,8 @@ public class IdcDm {
         int concDownload = getConcCount(fileSize, args);
 
 
+
+
         // function to generate threads
         // filewriter
 
@@ -142,6 +144,22 @@ public class IdcDm {
         return null;
     }
 
+    public static void startDownload(MetaData data, String[] linksArray, int concDownload, long fileSize){
+        Thread[] threads = new Thread[concDownload];
+        long start = 0;
+        long jump = (long)(fileSize/concDownload);
+        if (fileSize%concDownload != 0){
+            jump++;
+        }
+        long end = jump-1;
+        for (int i = 0; i < concDownload ; i++){
+            threads[i] = new Thread(start, end, i);
+            // code here
+            start = end+1;
+            end = end+jump;
+        }
+
+    }
 
     /**
      * reads a file, returns a string array where each line from the file is an entry
