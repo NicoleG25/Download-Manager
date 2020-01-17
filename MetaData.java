@@ -3,99 +3,83 @@ import java.net.*;
 import java.util.*;
 
 public class MetaData  implements Serializable {
-    private static String serName = "tempMetaData_agng.ser"; // name for main serialization file
-    private static String serName2 = "tempMetaDAta_ngag.ser"; // name for temp serialization file to avoid corruption
     private long[] progress; // progress in each chunk of the download, stores count of bytes downloaded.
-    private long fileSize; // the full size of the download file in bytes
-    public String fileName; // name of the download file
-    protected String[] links; // TODO: move to main, no need to store in metadata
-    protected int num_connections; // TODO: move to main, no need to store in metadata
     private int finished; // TODO: figure out wtf is this?
-    public static final int ARRAY_SIZE = 1024; // size of array
 
-
-
-    public MetaData(int num_connections, String[] links) {
-        this.num_connections = num_connections;
-        this.links = links;
+    public MetaData() {
         this.finished = 0; // TODO: UPDATE IN A FUNCTION SOMEWHERE
-        this.progress = new long[ARRAY_SIZE];
-        this.fileName = txtParser(links[0]);
+        this.progress = new long[1024];  // progress array of constant size
     }
 
+
+    public void updateFinished(int bytes){
+        this.finished += bytes;
+    }
+    /**
+     * updates downloaded bytes count for a chunk given by index
+     * @param index index in progress array
+     * @param bytes how many bytes to add at array[index]
+     */
     public void updateProgress(int index, int bytes) {
         this.progress[index] += bytes;
-
-
     }
 
-
-
-
-    public long getFileSize() {
-        return this.fileSize;
-    }
-
-    public long setFileSize() {
-        this.fileSize = 123;
-        return this.fileSize;
+    /**
+     * returns downloaded bytes for a certain chunk
+     * @param index index of progress array to return the value of
+     * @return
+     */
+    public long getProgress(int index){
+        return this.progress[index];
     }
 
     //TODO: serlialize data + test
-
-    public void serialize() {
-
-
+    public void serialize(String name) {
         // Serialization TODO check that we get backup
+        String nameMain = name+"_adfg43a.ser";
+        String nameSec  = name+"_we11fer.ser";
         try {
             //Saving of object in a file
-            FileOutputStream file = new FileOutputStream(serName);
+            FileOutputStream file = new FileOutputStream(nameMain);
             ObjectOutputStream out = new ObjectOutputStream(file);
-
             // Method for serialization of object
             out.writeObject(this);
-
-
             out.close();
             file.close();
-
             System.out.println("Object has been serialized");
-            File filetTemp = new File(serName);
-            filetTemp.renameTo(new File(serName2));
-
+            File filetTemp = new File(nameMain);
+            filetTemp.renameTo(new File(nameSec));
         } catch (IOException ex) {
             System.out.println("IOException is caught in serialize");
         }
-
     }
 
     //TODO: test deserialization
-
     /**
      * deserialize an in instance of MetaData
      * @return
      */
-    public static MetaData deserialize() {
+    public static MetaData deserialize(String name) {
         // Deserialization
+        String nameMain = name+"_adfg43a.ser";
         MetaData data = null;
         try {
             // Reading the object from a file
-            FileInputStream file = new FileInputStream(serName);
+            FileInputStream file = new FileInputStream(name+nameMain);
             ObjectInputStream in = new ObjectInputStream(file);
-
             // Method for deserialization of object
             data = (MetaData) in.readObject();
-            System.out.println(data.getFileSize());
-
             in.close();
             file.close();
-
-
-            System.out.println("Object has been deserialized ");
+            System.out.println("Object has been deserialized "); //TODO: delete after test
         } catch (IOException ex) {
-            System.out.println("IOException is caught in deserialize");
+            System.err.println("IOException is caught in deserialize");
+            System.err.println("Download failed");
+            System.exit(1);
         } catch (ClassNotFoundException ex) {
-            System.out.println("ClassNotFoundException is caught");
+            System.err.println("ClassNotFoundException is caught");
+            System.err.println("Download failed");
+            System.exit(1);
         }
         return data;
     }
@@ -104,32 +88,18 @@ public class MetaData  implements Serializable {
      * Deletes the two temp files
      *
      */
-    public static void deleteFile() {
-
-        File file = new File(serName);
-        File file2 = new File(serName2);
+    public static void deleteFile(String name) {
+        String nameMain = name+"_adfg43a.ser";
+        String nameSec  = name+"_we11fer.ser";
+        File file = new File(nameMain);
+        File file2 = new File(nameSec);
         file.delete();
         file2.delete();
-
     }
-
-    public String getFileName() {
-        return this.fileName;
-    }
-
-    public void setFileName(String name) {
-        this.fileName = name;
-
-    }
-
-
 
     public synchronized int getFinished() {
         return this.finished;
     }
-
-
-
 
 }
 

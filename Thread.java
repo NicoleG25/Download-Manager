@@ -3,69 +3,65 @@ import java.net.*;
 import java.util.*;
 
 public class Thread extends java.lang.Thread {
-    protected int maxRange;
-    protected int start;
-    protected String link;
-    protected long ID;
-    protected double buffer; // determines the number of bytes to update the percentage and send
+    protected int end; // last index of progress array the thread downloads
+    protected int start; // first index of progress array the thread downloads
+    protected String link; // download link for the thread to use
+    protected long chunkSize;
     protected FileWriter fw;
     protected MetaData data;
+    protected long fileSize;
+    protected int id;
 
 
 
-    public Thread(String link,int start,int end, double buffer, FileWriter fw, MetaData data) {
-        this.maxRange = end; //max byte to download
-        this.start = start;
-        this.link = link;
-        this.ID = this.getId();
-        this.buffer = buffer; // need to implement sending a flag back to SlaveThreader
-        this.fw = fw;
-        this.data = data;
-
-
+    public Thread(String link, int start, int end, long chunkSize, FileWriter fw, MetaData data, int id, long fileSize) {
+        this.end = end; // last index of progress array the thread downloads
+        this.start = start; // first index of progress array the thread downloads
+        this.link = link; // download link for the thread to use
+        this.chunkSize = chunkSize; // size of chunk
+        this.fw = fw; // FileWriter instance
+        this.data = data; // MetaData instance
+        this.fileSize = fileSize;
+        this.id = id;
     }
     // TODO: test + finish implementing
-    public void connect() {
-
-        while (this.data.getFinished() < MetaData.CHUNKSIZE) {
-
-            //TODO by tolika : finish implementing le logic
+    public void run() {
+        System.out.println("["+this.id+"] "+"Start downloading range ("+(this.start*chunkSize)+
+                " - "+Math.min(this.end*chunkSize-1, this.fileSize -1));
+        for (int i = this.start; i< this.end+1; i++) {
+            long startB = i*this.chunkSize + this.data.getProgress(i);
+            long endB = Math.min((i+1)*this.chunkSize - 1, this.fileSize -1);
+            if (startB > endB){
+                continue;
+            }
             try {
                 URL url = new URL(link);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                String byteRange = "bytes=" + this.start + "-" + this.maxRange;
+                String byteRange = "bytes=" + startB + "-" + endB;
                 urlConnection.setRequestProperty("Range", byteRange); //should handle download range
                 urlConnection.setConnectTimeout(500);
-
                 try {
                     urlConnection.connect();
                     BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
                     byte input[] = new byte[1024];
                     int byteContent;
-                    long position = 0; //TODO : implement by tolik
-                    int index = 0; //TODO : implement by tolik
                     while ((byteContent = in.read(input, 0, 1024)) != -1) {
-                        fw.writing(position, input, index, byteContent);
-
+                        fw.writing(startB, input, i, byteContent);
+                        startB += byteContent; //TODO: should it be +1 or not? need to test
                     }
-
-
                 }
                 catch(SocketTimeoutException e){
-                    System.err.println("SocketTimeout Exception in connect method @ Thread: "+this.ID);
+                    System.err.println("SocketTimeout Exception in connect method @ Thread: "+this.id);
+                    System.err.println("Download failed");
                     System.exit(1);
-
                 }
-
             }
             catch (IOException e) {
-                System.err.println("http URL connection error, thread: "+this.ID);
+                System.err.println("http URL connection error, thread: "+this.id);
+                System.err.println("Download failed");
                 System.exit(1);
             }
-
         }
-
-
+        System.out.println("["+this.id+"] Finished Downloading");
     }
-
 }

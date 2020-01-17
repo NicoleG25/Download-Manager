@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -41,25 +38,23 @@ public class IdcDm {
      */
     public static String[] getLinkArray(String linkInput){
         //TODO: test
-
         if (new File(linkInput).exists()) {
             return listFromFile(linkInput);
         }
         else {
             String[] list = {linkInput};
             return list;
-
         }
 
     }
 
-    //TODO : Test
     /**
      * gets a link in order to parse it to the name of the file
      * @param link - path to file
      * @return - returns a string that is the filename
      */
     public static String getFileName(String link) {
+        //TODO : Test
         String fileName = "";
         if (link.contains("\\")) { //if we are dealing with blackslashes
             String newLink = link.replace('\\', '/');
@@ -78,7 +73,7 @@ public class IdcDm {
      */
 
     //using a HEAD request to get the file size
-    public static int getFileSize(String link) {
+    public static long getFileSize(String link) {
         URLConnection conn = null;
         try {
             URL url = new URL(link);
@@ -107,10 +102,8 @@ public class IdcDm {
      */
     public static int getConcCount(long fileSize, String[] args){
         // TODO: implement
-
         if (fileSize < 1024) {
             return 2;
-
         }
         return 0;
     }
@@ -123,42 +116,63 @@ public class IdcDm {
      */
     public static MetaData genMetaData(String name){
         //TODO: add fields to Metadata constructor call + test
-        File f = new File("tempMetaData_agng.ser");
+        File f = new File(name+"_adfg43a.ser");
+        MetaData data;
         if(f.exists()) {
-            MetaData temp = MetaData.deserialize();
-            String fileName = temp.getFileName();
-            if (fileName == name) {
-                return temp;
-
-            }
-            else {
-                MetaData metadata = new MetaData(); //insert arguments when finished constrcution Metadata class
-
-            }
-
-
+            data = MetaData.deserialize(name+"_adfg43a.ser");
         }
         else {
-            MetaData metadata = new MetaData(); //insert arguments when finished constrcution Metadata class
+            data = new MetaData(); //insert arguments when finished constrcution Metadata class
         }
-        return null;
+        return data;
     }
 
-    public static void startDownload(MetaData data, String[] linksArray, int concDownload, long fileSize){
-        Thread[] threads = new Thread[concDownload];
-        long start = 0;
-        long jump = (long)(fileSize/concDownload);
-        if (fileSize%concDownload != 0){
-            jump++;
-        }
-        long end = jump-1;
-        for (int i = 0; i < concDownload ; i++){
-            threads[i] = new Thread(start, end, i);
-            // code here
-            start = end+1;
-            end = end+jump;
+    public static void startDownload(MetaData data, String[] linksArray, int concDownload, long fileSize, String name){
+        // creating new RandomAccessFile to write into
+        RandomAccessFile accessor = null;
+        try{
+             accessor = new RandomAccessFile(name, "w");
+            accessor.setLength(fileSize);
+        } catch (FileNotFoundException e){
+            System.err.println("error generating random access file");
+            System.err.println("Download failed");
+            System.exit(1);
+        } catch (IOException io){
+            System.err.println("error setting file size");
+            System.err.println("Download failed");
+            System.exit(1);
         }
 
+
+        Thread[] threads = new Thread[concDownload];
+        FileWriter fw = new FileWriter(data, accessor, fileSize, name);
+        int indexJump = 1024/concDownload;
+        int start = 0;
+        int end = indexJump-1;
+        long chunkSize = fileSize/1024;
+
+        for (int i = 0; i < concDownload ; i++){
+            String link = linksArray[i%linksArray.length]; // gets link by modulo of i over links array length
+            if (fileSize%concDownload >= i){
+                end++;
+            }
+            if (end > 1023){
+                end = 1023;
+            }
+            threads[i] = new Thread(link, start, end, chunkSize, fw, data, i, fileSize);
+            threads[i].start();
+            start = end+1;
+            end = end+indexJump;
+        }
+        for (int i = 0; i < concDownload ; i++){
+            try{
+                threads[i].join();
+            } catch(InterruptedException e){
+                System.err.println("Thread interrupt exception");
+            }
+        }
+        System.out.println("Download succeeded");
+        MetaData.deleteFile(name);
     }
 
     /**
@@ -182,5 +196,4 @@ public class IdcDm {
         String[] links = lines.toArray(new String[]{});
         return links;
     }
-
 }
