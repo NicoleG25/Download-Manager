@@ -16,7 +16,7 @@ public class FileWriter {
         this.data = data;
         this.fileSize = fileSize;
         this.sum = data.getFinished();
-        this.percent = (int)(this.data.getFinished()*100/this.fileSize);
+        this.percent = (int)(this.data.getFinished()*101/this.fileSize);
         this.fileName = fileName;
         this.accessor = accessor;
         System.out.println(fileSize);

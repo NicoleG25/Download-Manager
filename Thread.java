@@ -42,7 +42,7 @@ public class Thread extends java.lang.Thread {
                 String byteRange = "bytes=" + startB + "-" + endB;
                 System.out.println(byteRange); //TODO: delete
                 urlConnection.setRequestProperty("Range", byteRange); //should handle download range
-                urlConnection.setConnectTimeout(5000);
+                urlConnection.setReadTimeout(5000);
                 try {
                     urlConnection.connect();
                     BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());

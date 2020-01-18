@@ -33,6 +33,9 @@ public class Tester {
 //        data = MetaData.deserialize();
 //        System.out.println(data.getFileSize());
 //        MetaData.deleteFile("temp23f3sersdf.ser");
+        String url = "https://archive.org/download/Mario1_500/Mario1_500.avi";
+
+
     }
 
     public static String txtParser(String link) {

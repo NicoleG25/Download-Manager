@@ -126,15 +126,11 @@ public class IdcDm {
     public static void startDownload(MetaData data, String[] linksArray, int concDownload, long fileSize, String name){
         // creating new RandomAccessFile to write into
         RandomAccessFile accessor = null;
-        try{
+        try {
             accessor = new RandomAccessFile(name, "rw");
-            //accessor.setLength(fileSize);
-        } catch (FileNotFoundException e){
+        }
+        catch (FileNotFoundException e){
             System.err.println("error generating random access file");
-            System.err.println("Download failed");
-            System.exit(1);
-        } catch (IOException io){
-            System.err.println("error setting file size");
             System.err.println("Download failed");
             System.exit(1);
         }
