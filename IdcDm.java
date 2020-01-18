@@ -9,7 +9,7 @@ public class IdcDm {
 
     //TODO: check if we need to delete old metada if we restart with a different download
 
-    public static final int CHUNKS = 16;
+    public static final int CHUNKS = 32;
     public static void main(String[] args){
 
         String[] linksList = getLinkArray(args[0]);
@@ -99,7 +99,7 @@ public class IdcDm {
             if (fileSize < 1024*1024*2){
                 return 2;
             }
-            else return conc;
+            else return Math.min(conc,CHUNKS);
         }
         return 1;
     }
