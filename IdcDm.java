@@ -29,7 +29,6 @@ public class IdcDm {
      * @return - returns a list of Strings representing URL
      */
     public static String[] getLinkArray(String linkInput){
-        //TODO: test
         if (new File(linkInput).exists()) {
             return listFromFile(linkInput);
         }
@@ -46,7 +45,6 @@ public class IdcDm {
      * @return - returns a string that is the filename
      */
     public static String getFileName(String link) {
-        //TODO : Test
         String fileName = "";
         if (link.contains("\\")) { //if we are dealing with blackslashes
             String newLink = link.replace('\\', '/');
@@ -93,7 +91,6 @@ public class IdcDm {
      * @return
      */
     public static int getConcCount(long fileSize, String[] args){
-        // TODO: implement
         if (args.length == 2){
             int conc = Integer.parseInt(args[1]);
             if (fileSize < 1024*1024*2){
@@ -111,7 +108,6 @@ public class IdcDm {
      * @return
      */
     public static MetaData genMetaData(String name){
-        //TODO: test
         File f = new File(name+".tmp_we11fer.ser");
         MetaData data;
         if(f.exists()) {

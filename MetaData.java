@@ -4,10 +4,10 @@ import java.util.*;
 
 public class MetaData  implements Serializable {
     private long[] progress; // progress in each chunk of the download, stores count of bytes downloaded.
-    private int finished; // TODO: figure out wtf is this?
+    private int finished; // TODO: explain this better
 
     public MetaData() {
-        this.finished = 0; // TODO: UPDATE IN A FUNCTION SOMEWHERE
+        this.finished = 0;
         this.progress = new long[IdcDm.CHUNKS];  // progress array of constant size
     }
 
@@ -33,9 +33,8 @@ public class MetaData  implements Serializable {
         return this.progress[index];
     }
 
-    //TODO: serlialize data + test
+
     public void serialize(String name) {
-        // Serialization TODO check that we get backup
         String nameMain = name+".tmp_adfg43a.ser";
         String nameSec  = name+".tmp_we11fer.ser";
         try {
@@ -53,7 +52,7 @@ public class MetaData  implements Serializable {
         }
     }
 
-    //TODO: test deserialization
+
     /**
      * deserialize an in instance of MetaData
      * @return

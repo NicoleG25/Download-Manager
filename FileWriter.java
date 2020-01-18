@@ -34,7 +34,7 @@ public class FileWriter {
         } catch (IOException e) {
             System.err.println("Invalid Position");
         }
-        // TODO : test percentages
+
         //calculates the percentages
         int percentTemp = (int)(this.sum * 101 /this.fileSize);
         this.sum += length;
