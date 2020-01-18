@@ -18,6 +18,8 @@ public class FileWriter {
         this.sum = data.getFinished();
         this.percent = (int)(this.data.getFinished()*100/this.fileSize);
         this.fileName = fileName;
+        this.accessor = accessor;
+        System.out.println(fileSize);
 
         System.out.println("Downloaded " + (this.percent) + "%");
     }
@@ -34,7 +36,7 @@ public class FileWriter {
         }
         // TODO : test percentages
         //calculates the percentages
-        int percentTemp = (int)(this.sum * 100 /this.fileSize);
+        int percentTemp = (int)(this.sum * 101 /this.fileSize);
         this.sum += length;
         if (percentTemp > this.percent){
             data.serialize(this.fileName);

@@ -23,11 +23,13 @@ public class Thread extends java.lang.Thread {
         this.data = data; // MetaData instance
         this.fileSize = fileSize;
         this.id = id;
+        System.out.println("Start Index=" + this.start + " Ending Index=" + this.end);
+
     }
     // TODO: test + finish implementing
     public void run() {
         System.out.println("["+this.id+"] "+"Start downloading range ("+(this.start*chunkSize)+
-                " - "+Math.min(this.end*chunkSize-1, this.fileSize -1));
+                " - "+Math.min((this.end+1)*chunkSize-1, this.fileSize -1) + ") from:\n"+this.link);
         for (int i = this.start; i< this.end+1; i++) {
             long startB = i*this.chunkSize + this.data.getProgress(i);
             long endB = Math.min((i+1)*this.chunkSize - 1, this.fileSize -1);
@@ -38,15 +40,16 @@ public class Thread extends java.lang.Thread {
                 URL url = new URL(link);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 String byteRange = "bytes=" + startB + "-" + endB;
+                System.out.println(byteRange); //TODO: delete
                 urlConnection.setRequestProperty("Range", byteRange); //should handle download range
-                urlConnection.setConnectTimeout(500);
+                urlConnection.setConnectTimeout(5000);
                 try {
                     urlConnection.connect();
                     BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
                     byte input[] = new byte[1024];
                     int byteContent;
                     while ((byteContent = in.read(input, 0, 1024)) != -1) {
-                        fw.writing(startB, input, i, byteContent);
+                        fw.writing(startB, input, byteContent, i);
                         startB += byteContent; //TODO: should it be +1 or not? need to test
                     }
                 }

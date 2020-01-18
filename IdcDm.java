@@ -7,25 +7,17 @@ import java.util.List;
 
 public class IdcDm {
 
-    static int PRL_DOWNLOADS = 1;  // default value for number of concurrent downloads
+    //TODO: check if we need to delete old metada if we restart with a different download
 
+    public static final int CHUNKS = 16;
     public static void main(String[] args){
-        String linkInput = args[0];
 
         String[] linksList = getLinkArray(args[0]);
         String fileName = getFileName(linksList[0]);
         long fileSize = getFileSize(linksList[0]);
         MetaData data = genMetaData(fileName);
         int concDownload = getConcCount(fileSize, args);
-
-
-
-
-        // function to generate threads
-        // filewriter
-
-
-
+        startDownload(data, linksList, concDownload, fileSize, fileName);
     }
 
 
@@ -102,10 +94,14 @@ public class IdcDm {
      */
     public static int getConcCount(long fileSize, String[] args){
         // TODO: implement
-        if (fileSize < 1024) {
-            return 2;
+        if (args.length == 2){
+            int conc = Integer.parseInt(args[1]);
+            if (fileSize < 1024*1024*2){
+                return 2;
+            }
+            else return conc;
         }
-        return 0;
+        return 1;
     }
 
     /**
@@ -115,11 +111,11 @@ public class IdcDm {
      * @return
      */
     public static MetaData genMetaData(String name){
-        //TODO: add fields to Metadata constructor call + test
-        File f = new File(name+"_adfg43a.ser");
+        //TODO: test
+        File f = new File(name+".tmp_we11fer.ser");
         MetaData data;
         if(f.exists()) {
-            data = MetaData.deserialize(name+"_adfg43a.ser");
+            data = MetaData.deserialize(name);
         }
         else {
             data = new MetaData(); //insert arguments when finished constrcution Metadata class
@@ -131,8 +127,8 @@ public class IdcDm {
         // creating new RandomAccessFile to write into
         RandomAccessFile accessor = null;
         try{
-             accessor = new RandomAccessFile(name, "w");
-            accessor.setLength(fileSize);
+            accessor = new RandomAccessFile(name, "rw");
+            //accessor.setLength(fileSize);
         } catch (FileNotFoundException e){
             System.err.println("error generating random access file");
             System.err.println("Download failed");
@@ -146,18 +142,21 @@ public class IdcDm {
 
         Thread[] threads = new Thread[concDownload];
         FileWriter fw = new FileWriter(data, accessor, fileSize, name);
-        int indexJump = 1024/concDownload;
+        int indexJump = CHUNKS/concDownload;
         int start = 0;
         int end = indexJump-1;
-        long chunkSize = fileSize/1024;
+        long chunkSize = fileSize/CHUNKS;
+        if (fileSize%CHUNKS != 0){
+            chunkSize++;
+        }
 
         for (int i = 0; i < concDownload ; i++){
             String link = linksArray[i%linksArray.length]; // gets link by modulo of i over links array length
-            if (fileSize%concDownload >= i){
+            if (CHUNKS%concDownload > i){
                 end++;
             }
-            if (end > 1023){
-                end = 1023;
+            if (end > CHUNKS -1){
+                end = CHUNKS -1;
             }
             threads[i] = new Thread(link, start, end, chunkSize, fw, data, i, fileSize);
             threads[i].start();

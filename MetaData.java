@@ -8,7 +8,7 @@ public class MetaData  implements Serializable {
 
     public MetaData() {
         this.finished = 0; // TODO: UPDATE IN A FUNCTION SOMEWHERE
-        this.progress = new long[1024];  // progress array of constant size
+        this.progress = new long[IdcDm.CHUNKS];  // progress array of constant size
     }
 
 
@@ -36,8 +36,8 @@ public class MetaData  implements Serializable {
     //TODO: serlialize data + test
     public void serialize(String name) {
         // Serialization TODO check that we get backup
-        String nameMain = name+"_adfg43a.ser";
-        String nameSec  = name+"_we11fer.ser";
+        String nameMain = name+".tmp_adfg43a.ser";
+        String nameSec  = name+".tmp_we11fer.ser";
         try {
             //Saving of object in a file
             FileOutputStream file = new FileOutputStream(nameMain);
@@ -46,7 +46,6 @@ public class MetaData  implements Serializable {
             out.writeObject(this);
             out.close();
             file.close();
-            System.out.println("Object has been serialized");
             File filetTemp = new File(nameMain);
             filetTemp.renameTo(new File(nameSec));
         } catch (IOException ex) {
@@ -61,17 +60,17 @@ public class MetaData  implements Serializable {
      */
     public static MetaData deserialize(String name) {
         // Deserialization
-        String nameMain = name+"_adfg43a.ser";
+        String nameMain = name+".tmp_we11fer.ser";
         MetaData data = null;
         try {
             // Reading the object from a file
-            FileInputStream file = new FileInputStream(name+nameMain);
+            FileInputStream file = new FileInputStream(nameMain);
             ObjectInputStream in = new ObjectInputStream(file);
+
             // Method for deserialization of object
             data = (MetaData) in.readObject();
             in.close();
             file.close();
-            System.out.println("Object has been deserialized "); //TODO: delete after test
         } catch (IOException ex) {
             System.err.println("IOException is caught in deserialize");
             System.err.println("Download failed");
@@ -89,8 +88,8 @@ public class MetaData  implements Serializable {
      *
      */
     public static void deleteFile(String name) {
-        String nameMain = name+"_adfg43a.ser";
-        String nameSec  = name+"_we11fer.ser";
+        String nameMain = name+".tmp_adfg43a.ser";
+        String nameSec  = name+".tmp_we11fer.ser";
         File file = new File(nameMain);
         File file2 = new File(nameSec);
         file.delete();
