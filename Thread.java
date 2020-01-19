@@ -1,30 +1,26 @@
 import java.io.*;
 import java.net.*;
-import java.util.*;
 
 public class Thread extends java.lang.Thread {
-    protected int end; // last index of progress array the thread downloads
-    protected int start; // first index of progress array the thread downloads
-    protected String link; // download link for the thread to use
-    protected long chunkSize;
-    protected FileWriter fw;
-    protected MetaData data;
-    protected long fileSize;
-    protected int id;
-
+    protected int end;  // last index of progress array the thread downloads
+    protected int start;  // first index of progress array the thread downloads
+    protected String link;  // download link for the thread to use
+    protected long chunkSize;  // size of chunk
+    protected FileWriter fw;  // FileWriter instance
+    protected MetaData data;  // MetaData instance
+    protected long fileSize;  // size of download file
+    protected int id;  // id of thread
 
 
     public Thread(String link, int start, int end, long chunkSize, FileWriter fw, MetaData data, int id, long fileSize) {
-        this.end = end; // last index of progress array the thread downloads
-        this.start = start; // first index of progress array the thread downloads
-        this.link = link; // download link for the thread to use
-        this.chunkSize = chunkSize; // size of chunk
-        this.fw = fw; // FileWriter instance
-        this.data = data; // MetaData instance
+        this.end = end;
+        this.start = start;
+        this.link = link;
+        this.chunkSize = chunkSize;
+        this.fw = fw;
+        this.data = data;
         this.fileSize = fileSize;
         this.id = id;
-        System.out.println("Start Index=" + this.start + " Ending Index=" + this.end);
-
     }
 
     public void run() {
@@ -39,17 +35,17 @@ public class Thread extends java.lang.Thread {
             try {
                 URL url = new URL(link);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                String byteRange = "bytes=" + startB + "-" + endB;
+                String byteRange = "bytes=" + startB + "-" + endB;  // range request format
                 urlConnection.setRequestProperty("Range", byteRange); //should handle download range
-                urlConnection.setReadTimeout(5000);
+                urlConnection.setReadTimeout(5000);  // time out in case of disconnect from server
                 try {
                     urlConnection.connect();
                     BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                    byte input[] = new byte[1024];
-                    int byteContent;
+                    byte input[] = new byte[1024];  // buffer to download into
+                    int byteContent;  // how many bytes were filled on each read
                     while ((byteContent = in.read(input, 0, 1024)) != -1) {
                         fw.writing(startB, input, byteContent, i);
-                        startB += byteContent;
+                        startB += byteContent;  // update seek position
                     }
                 }
                 catch(SocketTimeoutException e){
@@ -61,6 +57,7 @@ public class Thread extends java.lang.Thread {
             catch (IOException e) {
                 System.err.println("http URL connection error, thread: "+this.id);
                 System.err.println("Download failed");
+
                 System.exit(1);
             }
         }

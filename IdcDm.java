@@ -1,27 +1,19 @@
 import java.io.*;
 import java.net.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class IdcDm {
 
-    //TODO: check if we need to delete old metada if we restart with a different download
-
-    public static final int CHUNKS = 32;
+    public static int CHUNKS = 0;  // number of chunks to split the download file into
     public static void main(String[] args){
-
-        String[] linksList = getLinkArray(args[0]);
-        String fileName = getFileName(linksList[0]);
-        long fileSize = getFileSize(linksList[0]);
-        MetaData data = genMetaData(fileName);
-        int concDownload = getConcCount(fileSize, args);
+        String[] linksList = getLinkArray(args[0]);  // set an array of links from first argument
+        String fileName = getFileName(linksList[0]);  // get the name of the file were downloading
+        long fileSize = getFileSize(linksList[0]);  // size of the file were downloading
+        int concDownload = getConcCount(fileSize, args);  // needs to be called before meta, CHUNKS will be defined
+        MetaData data = genMetaData(fileName);  // setup MetaData object, includes a chunk array and downloaded bytes
         startDownload(data, linksList, concDownload, fileSize, fileName);
     }
-
-
-
 
     /**
      * The function checks if the String is a path to a file, if not by default it is set as a URL
@@ -29,28 +21,27 @@ public class IdcDm {
      * @return - returns a list of Strings representing URL
      */
     public static String[] getLinkArray(String linkInput){
-        if (new File(linkInput).exists()) {
+        if (new File(linkInput).exists()) {  // check if first arg is a local path
             return listFromFile(linkInput);
         }
         else {
-            String[] list = {linkInput};
+            String[] list = {linkInput};  // we got a ling, define an array with this single link
             return list;
         }
-
     }
 
     /**
-     * gets a link in order to parse it to the name of the file
-     * @param link - path to file
+     * parses the download file name out of a download link
+     * @param link - URL link to download file
      * @return - returns a string that is the filename
      */
     public static String getFileName(String link) {
         String fileName = "";
-        if (link.contains("\\")) { //if we are dealing with blackslashes
+        if (link.contains("\\")) {  // in case provided URL/path uses backslashes for some peculiar reason
             String newLink = link.replace('\\', '/');
             fileName = newLink.substring(newLink.lastIndexOf('/')+1, newLink.length());
         }
-        else { //if we are dealing with forward slashes
+        else {  // normal use of slashes
             fileName = link.substring(link.lastIndexOf('/') + 1, link.length());
         }
         return fileName;
@@ -58,11 +49,9 @@ public class IdcDm {
 
     /**
      * gets the file size from the URL using a HEAD request.
-     * @param link - String link to file
+     * @param link - URL link to download file
      * @return - returns the integer that represents the size of the file.
      */
-
-    //using a HEAD request to get the file size
     public static long getFileSize(String link) {
         URLConnection conn = null;
         try {
@@ -75,13 +64,15 @@ public class IdcDm {
             return conn.getContentLength();
         }
         catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.print("Error extracting file size from provided link :"+link+"\n Download failed");
+            System.exit(1);
         }
         finally {
             if(conn instanceof HttpURLConnection) {
                 ((HttpURLConnection)conn).disconnect();
             }
         }
+        return 0;
     }
 
     /**
@@ -91,10 +82,14 @@ public class IdcDm {
      * @return
      */
     public static int getConcCount(long fileSize, String[] args){
+        CHUNKS = (int)fileSize/(1024*1024); // split file into chunks of 1 MB
+        if (fileSize%(1024*1024) != 0){  // in case the file is not divisible by 1MB ned to account for remainder
+            CHUNKS++;
+        }
         if (args.length == 2){
             int conc = Integer.parseInt(args[1]);
-            if (fileSize < 1024*1024*2){
-                return 2;
+            if (fileSize < 1024*1024){
+                return 1;
             }
             else return Math.min(conc,CHUNKS);
         }
@@ -110,18 +105,17 @@ public class IdcDm {
     public static MetaData genMetaData(String name){
         File f = new File(name+".tmp_we11fer.ser");
         MetaData data;
-        if(f.exists()) {
+        if(f.exists()) {  // check if were resuming a download
             data = MetaData.deserialize(name);
         }
         else {
-            data = new MetaData(); //insert arguments when finished constrcution Metadata class
+            data = new MetaData();  // generate new metadata
         }
         return data;
     }
 
     public static void startDownload(MetaData data, String[] linksArray, int concDownload, long fileSize, String name){
-        // creating new RandomAccessFile to write into
-        RandomAccessFile accessor = null;
+        RandomAccessFile accessor = null;  // creating new RandomAccessFile to write into
         try {
             accessor = new RandomAccessFile(name, "rw");
         }
@@ -131,17 +125,15 @@ public class IdcDm {
             System.exit(1);
         }
 
-
-        Thread[] threads = new Thread[concDownload];
-        FileWriter fw = new FileWriter(data, accessor, fileSize, name);
-        int indexJump = CHUNKS/concDownload;
-        int start = 0;
-        int end = indexJump-1;
+        Thread[] threads = new Thread[concDownload];  // new threads for URL requests
+        FileWriter fw = new FileWriter(data, accessor, fileSize, name);  // setup FileWriter object
+        int indexJump = CHUNKS/concDownload;  // for chunks index distribution
+        int start = 0;  // starting from index
+        int end = indexJump-1; // -1 compensate since we start from 0 and not 1
         long chunkSize = fileSize/CHUNKS;
         if (fileSize%CHUNKS != 0){
             chunkSize++;
         }
-
         for (int i = 0; i < concDownload ; i++){
             String link = linksArray[i%linksArray.length]; // gets link by modulo of i over links array length
             if (CHUNKS%concDownload > i){
@@ -159,11 +151,12 @@ public class IdcDm {
             try{
                 threads[i].join();
             } catch(InterruptedException e){
-                System.err.println("Thread interrupt exception");
+                System.err.println("Thread interrupt exception \n Download failed");
+                System.exit(1);
             }
         }
+        MetaData.deleteFile(name); // delete remaining metadata
         System.out.println("Download succeeded");
-        MetaData.deleteFile(name);
     }
 
     /**
@@ -172,9 +165,10 @@ public class IdcDm {
      * @return - returns a string array of all the lines in the file
      */
     public static String[] listFromFile(String filePath){
-        List<String> lines = new ArrayList<>();
-        String line;
+        List<String> lines = new ArrayList<>();  // need some dynamic structure to read lines from file into
+        String line;  // for reading lines from file into
         try{
+            // while file has lines, read them
             BufferedReader br = new BufferedReader(new FileReader(filePath));
             while((line = br.readLine()) != null){
                 lines.add(line);
@@ -182,9 +176,9 @@ public class IdcDm {
         }
         catch(IOException e){
             System.out.println("Error reading from file");
-            System.exit(0);
+            System.exit(1);
         }
-        String[] links = lines.toArray(new String[]{});
+        String[] links = lines.toArray(new String[]{});  // convert the list to array
         return links;
     }
 }
